@@ -7,7 +7,11 @@ export default function FiltrarPorLigas({
   setCamisetasVisibles, 
   setVisibilidadFiltrarEquipo, 
   setEquiposVisibles, 
-  setTitulo
+  setTitulo,
+  setIdLiga,
+  setBusquedaChatGPT,
+  setRespuestaChatGPT,
+  setVisibilidadChatGPT
 }) {
 
   async function handleClickLigas (liga){
@@ -17,7 +21,11 @@ export default function FiltrarPorLigas({
     setVisibilidadFiltrarLiga("none");
     setVisibilidadFiltrarEquipo("block");
     setEquiposVisibles(equipos);
+    setIdLiga(liga.id_liga);
     setTitulo("Camisetas de "+liga.nombre);
+    setBusquedaChatGPT(liga.nombre);
+    setRespuestaChatGPT('');
+    setVisibilidadChatGPT("block");
   }
 
   return (

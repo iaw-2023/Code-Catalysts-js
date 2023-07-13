@@ -8,9 +8,10 @@ export default function Camiseta(props) {
     return (
         <div className={styles.contenedor}>  
             <img                
-                src={imagen}
+                src={"data:image/jpg;base64," + imagen}
                 width={100}
                 height={100}
+                alt={'Camiseta ' + descripcion}
             />
             <p className={styles.descripcion}>{descripcion}</p>
             <p className={styles.precio}>${precio}</p>

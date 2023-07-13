@@ -1,19 +1,25 @@
 import { useState } from "react";
-import { registrarPedido } from "../data/api";
 
 export default function Header ({
 	allProducts,
 	setAllProducts,
 	countProducts,
 	setCountProducts,
+    total,
+    setTotal,
     titulo,
     visibilidadTitulo,
-}) {
-    let json;
-    
+    setVisibilidadMercadoPago,
+    setVisibilidadCamisetaActual,
+    setVisibilidadCamisetas,
+    setVisibilidadFiltrarLiga,
+    setVisibilidadFiltrarEquipo,
+    setTitulo,
+    setVisibilidadCarrito,
+    setVisibilidadChatGPT,
+    setRespuestaChatGPT
+}) {    
     const [active, setActive] = useState(false);
-    const [mailCliente, setMailCliente] = useState('');
-    const [visibilidadMailCliente, setVisibilidadMailCliente] = useState("none");
     
     const eliminarCamiseta = product => {
 		const results = allProducts.filter(
@@ -22,40 +28,39 @@ export default function Header ({
 
 		setCountProducts(countProducts - 1);
 		setAllProducts(results);
-        setVisibilidadMailCliente("none");
+        setTotal(total - Number(product.precio));
 	};
 
     const vaciarCarrito = () => {
 		setAllProducts([]);
 		setCountProducts(0);
-        setVisibilidadMailCliente("none");
+        setTotal(0);
 	};
 
-    const finalizarCompra = () => {
-        if (mailCliente == '') {
-            setVisibilidadMailCliente('block');
+    const finalizarCompra = async () => {
+        const usuario = localStorage.getItem("usuario");
+        if (usuario == '' || usuario == null) {
+            alert("Antes de finalizar la compra debe iniciar sesion.");
         }
         else {
-            const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-            const isValidEmail = emailRegex.test(mailCliente);
-            if (isValidEmail) {
-                allProducts.forEach((producto, index) => {
-                    if (index === 0) {
-                        json = '{"id_camiseta": '+producto.id+',"talle": "'+producto.talle+'"}';
-                    } 
-                    else {
-                        json = json + ',{"id_camiseta": '+producto.id+',"talle": "'+producto.talle+'"}';
-                    }
-                });
-                registrarPedido(json,mailCliente);
-                setVisibilidadMailCliente('none');
-                setMailCliente('');
-                vaciarCarrito();
-                alert("Su compra se ha realizado con éxito.");
+            // Mostrar solo mp
+            setVisibilidadMercadoPago("block")
+            setVisibilidadCamisetaActual("none");
+            setVisibilidadCamisetas("none");
+            setVisibilidadFiltrarLiga("none");
+            setTitulo("");
+            setVisibilidadFiltrarEquipo("none");
+            setVisibilidadCarrito("none");
+            setVisibilidadChatGPT("none");
+            setRespuestaChatGPT('');
+            /*const pedido = await registrarPedido(json,usuario,token);
+            if (pedido == null) {
+                alert("Ocurrió un error al finalizar la compra.")
             }
             else {
-                alert("Debe ingresar un email válido");
-            }
+                vaciarCarrito();
+                alert("Su compra se ha realizado con éxito.");
+            }*/
         }
 	};
 
@@ -103,6 +108,9 @@ export default function Header ({
                                             <p className='titulo-producto-carrito'>
                                                 {product.talle}
                                             </p>
+                                            <span className='precio-producto-carrito'>
+												${product.precio}
+											</span>
                                         </div>
                                         <svg
                                             xmlns='http://www.w3.org/2000/svg'
@@ -122,21 +130,13 @@ export default function Header ({
                                     </div>
                                 ))}
                             </div>
-
+                            <div className='cart-total'>
+								<h3>Total:</h3>
+								<span className='total-pagar'>${total}</span>
+							</div>
                             <button className='btn-clear-all' onClick={vaciarCarrito}>
                                 Vaciar Carrito
                             </button>
-                            <div style={{ display: visibilidadMailCliente }}>
-                                <label className="labelEmail">
-                                    Ingrese su email:
-                                </label>
-                                <input
-                                    className="inputEmail"
-                                    type="text"
-                                    value={mailCliente}
-                                    onChange={(e) => setMailCliente(e.target.value)}
-                                />
-                            </div>
                             <button className='btn-clear-all' onClick={finalizarCompra}>
                                 Finalizar compra
                             </button>
